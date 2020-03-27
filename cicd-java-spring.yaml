@@ -184,7 +184,7 @@ objects:
                     oc set triggers dc -l app=tasks --containers=tasks --from-image=tasks:latest --manual -n ${DEMO_PROJECT}
                       
                     # demo project
-                    oc expose dc/tasks --port=8080 -n ${DEMO_PROJECT}
+                    oc expose dc/tasks --port=8085 -n ${DEMO_PROJECT}
                     oc expose svc/tasks -n ${DEMO_PROJECT}
                     # deploy gogs
                     HOSTNAME=$(oc get route jenkins -o template --template='{{.spec.host}}' | sed "s/jenkins-${DEMO_NAMESPACE}.//g")
