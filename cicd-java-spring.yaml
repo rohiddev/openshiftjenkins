@@ -177,14 +177,15 @@ objects:
                     oc set resources dc/jenkins --limits=cpu=2,memory=2Gi --requests=cpu=100m,memory=512Mi 
                     oc label dc jenkins app=jenkins --overwrite 
                     # setup demo env
-                    oc import-image wildfly --from=openjdk:8 --confirm -n ${DEMO_PROJECT} 
+                    #oc import-image java:8 --from=java:8 --confirm -n ${DEMO_PROJECT} 
                     # demo
-                    oc new-build --name=tasks --image-stream=wildfly:latest --binary=true -n ${DEMO_PROJECT}
-                    oc new-app tasks:latest --allow-missing-images -n ${DEMO_PROJECT}
+                    oc new-build --name=tasks --image-stream=java:latest --binary=true -n ${DEMO_PROJECT}
+                  
+                    oc new-app tasks:latest --allow-missing-images --allow-missing-imagestream-tags -n ${DEMO_PROJECT}
                     oc set triggers dc -l app=tasks --containers=tasks --from-image=tasks:latest --manual -n ${DEMO_PROJECT}
                       
                     # demo project
-                    oc expose dc/tasks --port=8080 -n ${DEMO_PROJECT}
+                    oc expose dc/tasks --port=8085 -n ${DEMO_PROJECT}
                     oc expose svc/tasks -n ${DEMO_PROJECT}
                     # deploy gogs
                     HOSTNAME=$(oc get route jenkins -o template --template='{{.spec.host}}' | sed "s/jenkins-${DEMO_NAMESPACE}.//g")
