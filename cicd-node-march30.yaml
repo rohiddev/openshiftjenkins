@@ -52,9 +52,11 @@ objects:
               def mvnCmd = "mvn -s configuration/cicd-settings-nexus3.xml"
               pipeline {
                 agent {
-                  label 'maven'
-                }
-                stages {
+                   node {
+                    // spin up a node.js slave pod to run this build on
+                    label 'nodejs'
+                   }
+                 stages {
                   stage('Build NodeJS') {
                     steps {
                       openshiftBuild(buildConfig: 'nodejs-ex', showBuildLogs: 'true')
@@ -74,10 +76,8 @@ objects:
                       }
                     }
                   }
-                  
-                  
-                  
-                  
+              
+                
                 }
               }
         type: JenkinsPipeline
@@ -159,9 +159,9 @@ objects:
                     oc set resources dc/jenkins --limits=cpu=2,memory=2Gi --requests=cpu=100m,memory=512Mi 
                     oc label dc jenkins app=jenkins --overwrite 
                     # setup demo env
-                    oc import-image java:8 --from=java:8 --confirm -n ${DEMO_PROJECT} 
+                    oc import-image npm:8 --from=npm:8 --confirm -n ${DEMO_PROJECT} 
                     # demo
-                    oc new-build --name=tasks --image-stream=java:8 --binary=true -n ${DEMO_PROJECT}
+                    oc new-build --name=tasks --image-stream=npm:8 --binary=true -n ${DEMO_PROJECT}
                     oc new-app tasks:latest --allow-missing-images -n ${DEMO_PROJECT}
                     oc set triggers dc -l app=tasks --containers=tasks --from-image=tasks:latest --manual -n ${DEMO_PROJECT}
                       
@@ -301,4 +301,3 @@ parameters:
     generate: expression
     name: WEBHOOK_SECRET
     required: true
-
